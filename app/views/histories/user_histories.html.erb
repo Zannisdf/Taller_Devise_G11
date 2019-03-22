@@ -1,0 +1,7 @@
+<ul>
+  <% @histories.each do |history| %>
+    <li>
+      <%= link_to history.title, history_path(history) %>
+    </li>
+  <% end %>
+</ul>

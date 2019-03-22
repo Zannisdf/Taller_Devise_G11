@@ -1,5 +1,6 @@
 class HistoriesController < ApplicationController
   before_action :set_history, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user!, except: :index
 
   # GET /histories
   # GET /histories.json
@@ -19,13 +20,16 @@ class HistoriesController < ApplicationController
 
   # GET /histories/1/edit
   def edit
+    redirect_to root_path, alert: 'No tienes permiso' unless (
+      @history.user == current_user || current_user.admin
+    )
   end
 
   # POST /histories
   # POST /histories.json
   def create
     @history = History.new(history_params)
-
+    @history.user = current_user
     respond_to do |format|
       if @history.save
         format.html { redirect_to @history, notice: 'History was successfully created.' }
@@ -59,6 +63,10 @@ class HistoriesController < ApplicationController
       format.html { redirect_to histories_url, notice: 'History was successfully destroyed.' }
       format.json { head :no_content }
     end
+  end
+
+  def user_histories
+    @histories = History.where(user: current_user)
   end
 
   private
